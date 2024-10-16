@@ -12,7 +12,7 @@ pipeline {
             steps {
                 script {
                     // Build the Docker image using the Dockerfile in the repository
-                    def customImage = docker.build("sinhatestimage")
+                    def customImage = docker.build("shivitestimg")
                 }
             }
         }
