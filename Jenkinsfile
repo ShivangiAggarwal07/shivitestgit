@@ -23,23 +23,15 @@ pipeline {
         }
 
         stage('Run Docker Container') {
-            steps {
-                script {
-                    // Run the Docker container
-                    docker.image("${IMAGE_NAME}").inside {
-                        // This runs commands inside the container.
-                        // You can run your application or tests here.
-                        sh 'python3 train.py'
-                    }
-                }
+    steps {
+        script {
+            // Convert Windows path format to Unix format for Docker
+            def workspaceUnixPath = pwd().replace('\\', '/').replaceAll('C:', '/c')
+            
+            // Run the Docker container using the converted path
+            docker.image("${IMAGE_NAME}").inside("--workdir ${workspaceUnixPath}") {
+                sh 'python3 train.py'
             }
-        }
-    }
-
-    post {
-        always {
-            // Clean up the workspace after pipeline completion
-            cleanWs()
         }
     }
 }
