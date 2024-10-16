@@ -1,15 +1,17 @@
 pipeline {
-    agent any
+    agent any  // Run the pipeline on any available Jenkins agent
+ 
     stages {
-        stage('Clone') {
+        stage('Clone Repository') {
             steps {
-                git '
-https://github.com/ShivangiAggarwal07/shivitestgit'
+                // Clone the repository from GitHub
+                git 'https://github.com/ShivangiAggarwal07/shivitestgit'
             }
         }
         stage('Build Docker Image') {
             steps {
                 script {
+                    // Build the Docker image using the Dockerfile in the repository
                     def customImage = docker.build("sinhatestimage")
                 }
             }
@@ -17,14 +19,15 @@ https://github.com/ShivangiAggarwal07/shivitestgit'
         stage('Run Docker Container') {
             steps {
                 script {
-                    docker.image("sinhatestimage").run('-p 5000:5000')
+                    // Run the Docker container, mapping port 5000
+                    customImage.run('-p 5000:5000')
                 }
             }
         }
     }
     post {
         always {
-            // Clean up after build
+            // Clean up workspace after the build
             cleanWs()
         }
     }
