@@ -1,33 +1,44 @@
 pipeline {
-    agent any  // Run the pipeline on any available Jenkins agent
- 
+    agent any
+
+    environment {
+        IMAGE_NAME = "shivitestimg"
+    }
+
     stages {
         stage('Clone Repository') {
             steps {
-                // Clone the repository from GitHub
-                git 'https://github.com/ShivangiAggarwal07/shivitestgit'
+                // Cloning the Git repository
+                git 'https://github.com/ShivangiAggarwal07/shivitestgit/'
             }
         }
+
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build the Docker image using the Dockerfile in the repository
-                    def customImage = docker.build("sinhatestimage")
+                    // Build Docker image from the Dockerfile in the repo
+                    docker.build("${IMAGE_NAME}")
                 }
             }
         }
+
         stage('Run Docker Container') {
             steps {
                 script {
-                    // Run the Docker container, mapping port 5000
-                    customImage.run('-p 5000:5000')
+                    // Run the Docker container
+                    docker.image("${IMAGE_NAME}").inside {
+                        // This runs commands inside the container.
+                        // You can run your application or tests here.
+                        sh 'python3 train.py'
+                    }
                 }
             }
         }
     }
+
     post {
         always {
-            // Clean up workspace after the build
+            // Clean up the workspace after pipeline completion
             cleanWs()
         }
     }
